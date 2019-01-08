@@ -33,7 +33,7 @@
     <mvc:annotation-driven/>
 
     <!-- 静态资源处理， css， js， imgs -->
-    <mvc:resources mapping="/resources/**" location="classpath:static"/>
+    <mvc:resources mapping="/static/**" location="/static/" />
     <!-- 为404界面，500界面做准备-->
     <!--<mvc:resources mapping="/errorpage/*" location="/errorpage/"/>-->
 
@@ -62,7 +62,7 @@
 
     <!-- 使用thymeleaf解析 -->
     <bean id="templateResolver" class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
-        <property name="prefix" value="/static/thymeleaf/"/>
+        <property name="prefix" value="/WEB-INF/thymeleaf/"/>
         <property name="suffix" value=".html"/>
         <property name="templateMode" value="HTML"/>
         <property name="cacheable" value="false"/>
