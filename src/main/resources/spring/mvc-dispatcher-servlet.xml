@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+      http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context.xsd
+      http://www.springframework.org/schema/mvc
+      http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!-- 本配置文件是工名为mvc-dispatcher的DispatcherServlet使用， 提供其相关的Spring MVC配置 -->
+
+    <!--激活各种标签注解-->
+    <!-- 启用Spring基于annotation的DI, 使用户可以在Spring MVC中使用Spring的强大功能。 激活 @Required @Autowired,JSR 250's @PostConstruct, @PreDestroy and @Resource 等标注 -->
+    <context:annotation-config/>
+
+    <!--DispatcherServlet上下文-->
+    <!-- DispatcherServlet上下文， 只管理@Controller类型的bean（就是@Controller标注的类），
+     忽略其他型的bean, 如@Service，因为Service会交给我们的Spring上下文来处理，继续理解层次化的上下文，
+      -->
+    <context:component-scan base-package="com.tt">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!-- HandlerMapping, 无需配置， Spring MVC可以默认启动。 DefaultAnnotationHandlerMapping  -->
+    <!--annotation-driven HandlerMapping -->
+
+    <!--启用基于annotation的handlerMapping-->
+    <!-- 扩充了注解驱动，可以将请求参数绑定到控制器参数 -->
+    <mvc:annotation-driven/>
+
+    <!-- 静态资源处理， css， js， imgs -->
+    <mvc:resources mapping="/resources/**" location="classpath:static"/>
+    <!-- 为404界面，500界面做准备-->
+    <!--<mvc:resources mapping="/errorpage/*" location="/errorpage/"/>-->
+
+    <!-- 配置ViewResolver。 可以用多个ViewResolver。 使用order属性排序。 InternalResourceViewResolver放在最后。
+     ContentNegotiatingViewResolver可以将相同的SpringMVC数据呈现成不同的数据形式-->
+    <!--<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="order" value="1"/>
+        <property name="mediaTypes">
+            <map>
+                <entry key="json" value="application/json"/>
+                <entry key="xml" value="application/xml"/>
+                <entry key="htm" value="text/html"/>
+            </map>
+        </property>
+        <property name="defaultViews">
+            <list>
+                &lt;!&ndash; JSON View &ndash;&gt;
+                <bean
+                        class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+                </bean>
+            </list>
+        </property>
+        <property name="ignoreAcceptHeader" value="true"/>
+    </bean>-->
+
+
+    <!-- 使用thymeleaf解析 -->
+    <bean id="templateResolver" class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+        <property name="prefix" value="/static/thymeleaf/"/>
+        <property name="suffix" value=".html"/>
+        <property name="templateMode" value="HTML"/>
+        <property name="cacheable" value="false"/>
+        <property name="characterEncoding" value="UTF-8"/>
+    </bean>
+    <bean id="templateEngine" class="org.thymeleaf.spring5.SpringTemplateEngine">
+        <property name="templateResolver" ref="templateResolver"/>
+    </bean>
+    <bean id="viewResolver" class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
+        <property name="templateEngine" ref="templateEngine"/>
+        <property name="characterEncoding" value="UTF-8"/>
+    </bean>
+
+
+    <!--文件上传和下载的配置，200*1024*1024即200M resolveLazily属性启用是为了推迟文件解析
+    ，以便捕获文件大小异常 -->
+    <!--<bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        &lt;!&ndash;限制上传文件的大小&ndash;&gt;
+        <property name="maxUploadSize" value="209715200"/>
+        &lt;!&ndash;默认编码&ndash;&gt;
+        <property name="defaultEncoding" value="UTF-8"/>
+        &lt;!&ndash;延迟加载，需要的时候提供上传文件的解析&ndash;&gt;
+        <property name="resolveLazily" value="true"/>
+    </bean>-->
+</beans>
